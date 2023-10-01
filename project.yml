@@ -1,0 +1,101 @@
+name: PokemonApp
+options:
+  deploymentTarget:
+    iOS: '15.0'
+
+packages:
+  SnapKit:
+    url: https://github.com/SnapKit/SnapKit.git
+    from: 5.0.0
+
+configurations:
+  Debug:
+    buildSettings:
+      ENABLE_USER_SCRIPT_SANDBOXING: 'NO'
+  Release:
+    buildSettings:
+      ENABLE_USER_SCRIPT_SANDBOXING: 'NO'
+
+targets:
+  main:
+    type: application
+    platform: iOS
+    sources:
+      - PokemonAppSources/PokemonApp
+      - Config
+    configFiles:
+      Debug: Config/debug.xcconfig
+      Release: Config/release.xcconfig
+    dependencies:
+      - package: SnapKit
+    preBuildScripts:
+      - script: Scripts/swiftlint.sh
+        name: Swiftlint
+    postBuildScripts:
+      - script: Scripts/sort_files.sh
+        name: SortFiles
+  PokemonAppTests:
+    type: bundle.unit-test
+    platform: iOS
+    sources:
+      - PokemonAppSources/PokemonAppTests
+    dependencies:
+      - target: main
+    buildSettings:
+      INFO_PLIST_FILE: PokemonAppSources/PokemonAppTests/Info.plist
+    hostApplication: main
+    options:
+    allowTestingHostApp: true
+  PokemonAppUITests:
+    type: bundle.ui-testing
+    platform: iOS
+    sources:
+      - PokemonAppSources/PokemonAppUITests
+    dependencies:
+      - target: main
+    buildSettings:
+      INFO_PLIST_FILE: PokemonAppSources/PokemonAppUITests/Info.plist
+    hostApplication: main
+
+schemes:
+  pokemonapp.debug:
+    build:
+      targets:
+        main: all
+        PokemonAppTests: test
+    run:
+      config: Debug
+    test:
+      config: Debug
+      targets:
+        - PokemonAppTests
+    archive:
+      config: Debug
+      
+  pokemonapp.release:
+    build:
+      targets:
+        main: all
+        PokemonAppTests: test
+    run:
+      config: Release
+    test:
+      config: Release
+      targets:
+        - PokemonAppTests
+    archive:
+      config: Release
+
+  pokemonapp.uitests:
+    build:
+      targets:
+        main: all
+        PokemonAppUITests: test
+    run:
+      config: Debug
+    test:
+      config: Debug
+      targets:
+        - PokemonAppUITests
+    archive:
+      config: Debug

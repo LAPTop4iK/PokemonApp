@@ -1,0 +1,39 @@
+### Headers settings
+company: Innowise Group
+
+### Xcode project settings
+project_name: PokemonApp
+xcodeproj_path: '../../PokemonApp.xcodeproj'
+prefix:
+
+### Code generation settings section
+# The main project target name
+project_target: PokemonApp
+
+# The file path for new modules
+project_file_path: PokemonApp/PresentationLayer
+
+# The Xcode group path to new modules
+project_group_path: PokemonApp/PresentationLayer
+
+### Tests generation settings section
+# The tests target name
+test_target: PokemonAppTests
+
+# The file path for new tests
+test_file_path: PokemonAppTests
+
+# The Xcode group path to new tests
+test_group_path: PokemonAppTests
+
+### Dependencies settings section
+podfile_path: Podfile
+
+### Templates
+catalogs:
+- 'https://github.com/rambler-digital-solutions/generamba-catalog'
+templates:
+- {name: swifty_viper}
+#- {name: local_template_name, local: 'absolute/file/path'}
+#- {name: remote_template_name, git: 'https://github.com/igrekde/remote_template'}
+#- {name: catalog_template_name}

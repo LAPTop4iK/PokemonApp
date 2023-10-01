@@ -1,0 +1,35 @@
+//
+//  Created by {{ developer.name }} on {{ date }}.
+//  Copyright © {{ year }} {{ developer.company }}. All rights reserved.
+//
+
+import UIKit
+
+class {{ module_info.name }}Module {
+    private let presenter = {{ module_info.name }}Presenter()
+    private let view: {{module_info.name}}ViewInput
+
+    init(output: {{ module_info.name }}ModuleOutput) {
+        let interactor = {{ module_info.name }}Interactor()
+        interactor.output = presenter
+
+        view = {{ module_info.name }}ViewController()
+        view.output = presenter
+
+        presenter.output = output
+        presenter.view = view
+        presenter.router = {{ module_info.name }}Router()
+        presenter.interactor = interactor
+    }
+}
+
+// MARK: {{ module_info.name }}ModuleInput
+extension {{ module_info.name }}Module: {{ module_info.name }}ModuleInput {
+    func presentAsNavController(from vc: UIViewController) {
+        presenter.presentAsNavController(from: vc)
+    }
+    
+    func present(from vc: UIViewController) {
+        presenter.present(from: vc)
+    }
+}
