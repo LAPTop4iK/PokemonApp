@@ -11,4 +11,4 @@ MODULE_NAME=$1
 cd "../Addons/Genaramba" || exit
 
 # Запускаем генерацию модуля с помощью Generamba
-generamba gen "$MODULE_NAME" swifty_viper --module_path "../../PokemonApp/UILayer/Modules"
+generamba gen "$MODULE_NAME" swifty_viper --module_path "../../PokemonAppSources/PokemonApp/UILayer/Modules"

@@ -31,11 +31,11 @@ targets:
       Release: Config/release.xcconfig
     dependencies:
       - package: SnapKit
-    preBuildScripts:
+    postCompileScripts:
       - script: Scripts/swiftlint.sh
         name: Swiftlint
     postBuildScripts:
-      - script: Scripts/sort_files.sh
+      - path: Scripts/sort_files.sh
         name: SortFiles
   PokemonAppTests:
     type: bundle.unit-test
