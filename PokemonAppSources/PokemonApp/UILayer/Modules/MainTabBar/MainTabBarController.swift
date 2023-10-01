@@ -15,7 +15,5 @@ final class MainTabBarController: UITabBarController {
 }
 
 extension UITabBar {
-    func updateAppearance() {
-        
-    }
+    func updateAppearance() {}
 }

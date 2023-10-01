@@ -13,6 +13,9 @@ class PokemonsListInteractor {
 }
 
 // MARK: - PokemonsListInteractorInput
-extension PokemonsListInteractor: PokemonsListInteractorInput {
 
+extension PokemonsListInteractor: PokemonsListInteractorInput {
+    func getPokemons(startIndex _: Int, countItems _: Int) {
+        output?.getPokemonsSuccess(model: PokemonList(count: 1, next: "", previous: "", results: [PokemonInfo]()))
+    }
 }

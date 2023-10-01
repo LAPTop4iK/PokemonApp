@@ -10,4 +10,6 @@ import Foundation
 
 protocol PokemonsListInteractorInput: AnyObject {
     var output: PokemonsListInteractorOutput? { get set }
+
+    func getPokemons(startIndex: Int, countItems: Int)
 }

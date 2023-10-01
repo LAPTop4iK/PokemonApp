@@ -8,6 +8,4 @@
 
 import Foundation
 
-protocol PokemonsListRouterInput: AnyObject {
-
-}
+protocol PokemonsListRouterInput: AnyObject {}

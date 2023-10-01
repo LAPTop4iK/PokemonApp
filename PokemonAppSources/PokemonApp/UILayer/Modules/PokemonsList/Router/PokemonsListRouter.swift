@@ -8,11 +8,8 @@
 
 import Foundation
 
-class PokemonsListRouter {
-
-}
+class PokemonsListRouter {}
 
 // MARK: - PokemonsListRouterInput
-extension PokemonsListRouter: PokemonsListRouterInput {
-    
-}
+
+extension PokemonsListRouter: PokemonsListRouterInput {}

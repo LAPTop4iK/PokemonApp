@@ -10,6 +10,6 @@ import UIKit
 protocol TabBarViewProtocol {
     var tabIcon: UIImage? { get }
     var tabTitle: String { get }
-    
+
     func configuredViewController() -> UIViewController
 }

@@ -7,8 +7,6 @@
 
 import UIKit
 
-protocol Loadable {
-}
+protocol Loadable {}
 
-extension Loadable where Self: UIViewController {
-}
+extension Loadable where Self: UIViewController {}

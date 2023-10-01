@@ -8,12 +8,10 @@
 import UIKit
 
 enum ColorStyle {
-
     func style() -> (red: CGFloat, green: CGFloat, blue: CGFloat, alpha: CGFloat) {
-        switch self {
-        }
+        switch self {}
     }
-    
+
     func color() -> UIColor {
         return UIColor(self)
     }

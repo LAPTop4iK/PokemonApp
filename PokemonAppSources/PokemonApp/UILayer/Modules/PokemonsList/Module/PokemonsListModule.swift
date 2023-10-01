@@ -7,9 +7,9 @@ import UIKit
 
 class PokemonsListModule: TabBarViewProtocol {
     var tabIcon = UIImage(systemName: "list.bullet")
-    
+
     var tabTitle: String = "Лист покемонов"
-    
+
     private let presenter = PokemonsListPresenter()
     private let view: PokemonsListViewInput
 
@@ -24,9 +24,8 @@ class PokemonsListModule: TabBarViewProtocol {
         presenter.router = PokemonsListRouter()
         presenter.interactor = interactor
     }
-    
+
     func configuredViewController() -> UIViewController {
         view.viewController
     }
-    
 }

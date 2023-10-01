@@ -8,6 +8,4 @@
 
 import Foundation
 
-protocol PokemonsListModuleOutput: AnyObject {
-
-}
+protocol PokemonsListModuleOutput: AnyObject {}

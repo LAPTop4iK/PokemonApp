@@ -11,5 +11,18 @@ import UIKit
 protocol PokemonsListViewInput: AnyObject, Presentable, Loadable {
     var output: PokemonsListViewOutput? { get set }
 
+    func reload()
+    func clearSearch()
+    func disableSearch()
+
+    func displayFooterLoader()
+    func hideFooterLoader()
+    func hideRefreshControl()
+
+    func selectRowAt(_ indexPath: IndexPath)
+    func reloadRow(indexPath: IndexPath)
+    func deleteRow(indexPath: IndexPath)
+
+    func displayError(title: String, message: String, reloadBlock: (() -> Void)?)
     func setupNavigationBar(title: String)
 }

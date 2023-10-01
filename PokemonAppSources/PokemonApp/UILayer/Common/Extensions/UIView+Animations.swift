@@ -7,6 +7,4 @@
 
 import UIKit
 
-extension UIView {
-    
-}
+extension UIView {}

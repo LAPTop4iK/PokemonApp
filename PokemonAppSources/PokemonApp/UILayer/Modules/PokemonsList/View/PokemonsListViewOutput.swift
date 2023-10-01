@@ -8,7 +8,15 @@
 
 import UIKit
 
-protocol PokemonsListViewOutput: AnyObject {
+protocol PokemonsListViewOutput: SearchViewOutput {
     func viewIsReady()
     func tapNavigationLeftBarButton()
+
+    func didSelectRow(indexPath: IndexPath)
+    func getCellModelForRow(at indexPath: IndexPath) -> PokemonCellModel
+    func getNumberOfRows() -> Int
+    func endOfPage(indexPath: IndexPath)
+
+    func search(_ text: String)
+    func refresh()
 }
