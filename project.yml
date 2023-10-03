@@ -1,7 +1,7 @@
 name: PokemonApp
 options:
   deploymentTarget:
-    iOS: '15.0'
+    iOS: "15.0"
 
 packages:
   SnapKit:
