@@ -10,7 +10,8 @@ import UIKit
 
 class PokemonsListPresenter {
     private var paginator: Paginator?
-    var model: PokemonList?
+    private var imageCache = [URL: UIImage]()
+    var model: PokemonAPIResponse?
 
     struct DataSourceModel {
         var cellModel: PokemonCellModel
@@ -32,28 +33,32 @@ extension PokemonsListPresenter {}
 // MARK: - PokemonsListViewOutput
 
 extension PokemonsListPresenter: PokemonsListViewOutput {
-    func getCellModelForRow(at _: IndexPath) -> PokemonCellModel {
+    
+    func getCellModelForRow(at indexPath: IndexPath) -> PokemonCellModel {
+        guard let model = self.model?.details[indexPath.row] else {
+            return PokemonCellModel(number: 0, name: "", elements: [], iconName: "", delegate: self)
+        }
+        
         return PokemonCellModel(
-            number: 1,
-            name: "Chandelure",
-            elements: [
-                ElementModel(color: .orange, iconImageName: "flame", name: "Fogo"),
-                ElementModel(color: .blue, iconImageName: "ellipsis.message.fill", name: "Fantasma")
-
-            ],
-            iconName: "shoeprints.fill"
+            number: model.id,
+            name: model.name,
+            elements: model.types,
+            iconName: model.sprites.front_default,
+            delegate: self
         )
     }
 
-    func didSelectRow(indexPath _: IndexPath) {
-        navigateToDetailFor(id: 0)
+    func didSelectRow(indexPath index: IndexPath) {
+        navigateToDetailFor(id: index.row + 1)
     }
 
     func getNumberOfRows() -> Int {
-        return 10
+        return model?.details.count ?? 0
     }
 
-    func endOfPage(indexPath _: IndexPath) {}
+    func endOfPage(indexPath _: IndexPath) async {
+        await self.paginator?.getData()
+    }
 
     func search(_: String) {}
 
@@ -63,15 +68,31 @@ extension PokemonsListPresenter: PokemonsListViewOutput {
 
     func refresh() {}
 
-    func viewIsReady() {
-        paginator = Paginator(
-            getData: interactor.getPokemons,
-            onStart: {},
-            onNext: view.displayFooterLoader
-        )
-        paginator?.getData()
-        view.setupNavigationBar(title: "PokemonsList")
-    }
+    func viewIsReady() async {
+            paginator = Paginator(
+                getData: { startIndex, batchSize in
+                    try? await self.interactor.getPokemons(startIndex: startIndex, countItems: batchSize)
+                },
+                onStart: {
+                    DispatchQueue.main.async {
+                        // Your UI update code for starting loading
+                    }
+                },
+                onNext: {
+                    DispatchQueue.main.async {
+                        self.view.displayFooterLoader()
+                    }
+                },
+                onError: { _ in }
+            )
+            
+            // Using await to call asynchronous method getData from actor
+            await paginator?.getData()
+            
+            DispatchQueue.main.async {
+                self.view.setupNavigationBar(title: "PokemonsList")
+            }
+        }
 
     func tapNavigationLeftBarButton() {
         closeView?()
@@ -81,26 +102,44 @@ extension PokemonsListPresenter: PokemonsListViewOutput {
 // MARK: - PokemonsListInteractorOutput
 
 extension PokemonsListPresenter: PokemonsListInteractorOutput {
-    func getPokemonsSuccess(model: PokemonList) {
-        view.hideFooterLoader()
-        view.hideRefreshControl()
-
+//    @MainActor
+    func getPokemonsSuccess(model: PokemonAPIResponse?) {
         updateModel(with: model)
-
-//        self.view.displayModeMessages()
-        view.reload()
-//        if let ip = self.selectedIndexPath {
-//            self.view.selectRowAt(ip)
-//        }
+        DispatchQueue.main.async {
+            self.view.reload()
+            self.view.hideFooterLoader()
+            self.view.hideRefreshControl()
+        }
+        Task {
+            await paginator?.update(startIndex: self.model?.details.count ?? 0, responseSize: model?.details.count ?? 0)
+        }
     }
 
     func getPokemonsFail(error _: String) {}
 }
 
+extension PokemonsListPresenter: ImageDownloaderDelegate {
+    func setImageForImageView(_ imageView: UIImageView, imageURL: URL) {
+        if let image = imageCache[imageURL] {
+            imageView.image = image
+        } else {
+//            imageView.showRotationLoader(constantY: 0)
+            imageView.loadImageAsynchronouslyFrom(url: imageURL) { [weak self] image in
+                if let img = image {
+                    self?.imageCache[imageURL] = img
+                }
+//                imageView.hideRotationLoader()
+            }
+        }
+        
+    }
+}
+
 private extension PokemonsListPresenter {
-    func updateModel(with model: PokemonList) {
-        let firstBatch = true
-        if firstBatch || self.model == nil {
+    func updateModel(with model: PokemonAPIResponse?) {
+        guard let model else { return }
+        
+        if self.model == nil {
             self.model = model
         } else {
             self.model?.updatePageWith(model: model)

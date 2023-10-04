@@ -47,11 +47,10 @@ class ElementView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 
-    func configure(with model: ElementModel) {
+    func configure(with model: TypeOfPower) {
         backgroundColor = model.color
-        iconImageView.image = UIImage(systemName: model.iconImageName) ??
-            UIImage(named: model.iconImageName)
-        nameLabel.text = model.name
+        iconImageView.image = model.image
+        nameLabel.text = model.rawValue.capitalized
         nameLabel.textColor = model.color.isDark ? .white : .black
     }
 }
@@ -68,12 +67,12 @@ private extension ElementView {
         circularView.snp.makeConstraints { make in
             make.leading.equalToSuperview().offset(2)
             make.centerY.equalToSuperview()
-            make.height.width.equalTo(22)
+            make.height.width.equalTo(self.snp.height).multipliedBy(0.8)
         }
 
         iconImageView.snp.makeConstraints { make in
             make.center.equalToSuperview()
-            make.width.height.equalToSuperview().multipliedBy(0.9)
+            make.width.height.equalToSuperview().multipliedBy(0.7)
         }
 
         nameLabel.snp.makeConstraints { make in

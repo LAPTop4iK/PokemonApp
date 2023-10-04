@@ -12,6 +12,7 @@ enum FontStyle {
     case header1
     case text1
     case text2
+    case description
 
     case semibold(CGFloat)
     case regular(CGFloat)
@@ -35,6 +36,8 @@ enum FontStyle {
             return (FontType.displayMedium.rawValue, 15)
         case .text2:
             return (FontType.displayRegular.rawValue, 21)
+        case .description:
+            return (FontType.displayRegular.rawValue, 18)
         case let .semibold(size):
             return (FontType.displaySemibold.rawValue, size)
         case let .regular(size):

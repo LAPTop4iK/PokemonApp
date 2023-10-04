@@ -9,6 +9,6 @@
 import UIKit
 
 protocol PokemonDetailViewOutput: AnyObject {
-    func viewIsReady()
+    func viewIsReady() async
     func tapNavigationLeftBarButton()
 }

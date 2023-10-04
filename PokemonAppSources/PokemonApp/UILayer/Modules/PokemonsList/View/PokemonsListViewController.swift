@@ -69,7 +69,9 @@ class PokemonsListViewController: UIViewController {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
         setupConstraints()
-        output?.viewIsReady()
+        Task {
+            await output?.viewIsReady()
+        }
     }
 }
 
@@ -185,7 +187,9 @@ extension PokemonsListViewController: UITableViewDataSource, UITableViewDelegate
 
         if deltaOffset <= 0 {
             if let ip = lastIndexPath {
-                output?.endOfPage(indexPath: ip)
+                Task {
+                    await output?.endOfPage(indexPath: ip)
+                }
             }
         }
     }

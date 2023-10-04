@@ -10,8 +10,10 @@ class PokemonDetailModule {
     private let view: PokemonDetailViewInput
 
     init(id: Int) {
+        let networkManager = PokemonAPI()
         let interactor = PokemonDetailInteractor()
         interactor.output = presenter
+        interactor.pokemonApiManager = networkManager
 
         view = PokemonDetailViewController()
         view.output = presenter
@@ -19,6 +21,7 @@ class PokemonDetailModule {
         presenter.view = view
         presenter.router = PokemonDetailRouter()
         presenter.interactor = interactor
+        presenter.id = id
     }
 }
 

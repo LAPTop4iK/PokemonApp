@@ -13,23 +13,6 @@ class PokemonDetailViewController: UIViewController {
     private let scrollView = UIScrollView()
     private let containerView = UIView()
     
-    var timer: Timer?
-
-    func startUpdatingHeightRange() {
-        // Инициализировать таймер, который генерирует новые значения раз в секунду
-//        timer = Timer.scheduledTimer(timeInterval: 1.0, target: self, selector: #selector(updateHeightRange), userInfo: nil, repeats: true)
-    }
-
-    @objc func updateHeightRange() {
-        // Генерировать случайные значения от 0 до 500
-        let lowerValue = CGFloat(arc4random_uniform(250)) // Максимум в половину, чтобы убедиться, что верхнее значение всегда больше
-        let upperValue = CGFloat(250 + arc4random_uniform(250)) // Минимум в половину, чтобы убедиться, что нижнее значение всегда меньше
-        
-        // Обновите `heightRange`, чтобы перерисовать круг.
-        headerView.handleScrollWith(range: lowerValue...upperValue)
-    }
-
-    
     private let headerView = PokemonDetailHeaderView()
 
     var output: PokemonDetailViewOutput?
@@ -42,7 +25,13 @@ class PokemonDetailViewController: UIViewController {
         setupConstraints()
         setupTransparentNavigationBar()
 
-        output?.viewIsReady()
+        Task {
+            await output?.viewIsReady()
+        }
+    }
+    
+    override func viewDidLayoutSubviews() {
+        scrollView.contentSize.height = headerView.frame.height
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -78,6 +67,7 @@ private extension PokemonDetailViewController {
             make.left.right.bottom.equalToSuperview()
         }
         
+        view.layoutIfNeeded()
     }
     
     func setupTransparentNavigationBar() {
@@ -102,8 +92,8 @@ extension PokemonDetailViewController: PokemonDetailViewInput {
         navigationController?.title = title
     }
     
-    func configureViewWith(model: PokemonDetailModel) {
-        headerView.configureWith(model: model)
+    func configureViewWith(model: CompletePokemonInfo, imageDelegate: ImageDownloaderDelegate) {
+        headerView.configureWith(model: model, delegate: imageDelegate)
     }
 }
 
@@ -127,11 +117,9 @@ extension PokemonDetailViewController: UIScrollViewDelegate {
             newHeight = max(maxCircleHeight, maxCircleHeight + (yOffset * resizeSpeedCoefficient))
         }
         
-        // Убеждаемся, что lowerBound никогда не будет больше upperBound
         let lowerBound = min(newHeight, maxCircleHeight)
         let upperBound = max(newHeight, maxCircleHeight)
         
-        // Обновите `heightRange`, чтобы перерисовать круг.
         headerView.handleScrollWith(range: lowerBound...upperBound)
     }
 }

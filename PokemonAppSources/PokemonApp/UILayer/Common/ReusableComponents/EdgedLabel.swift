@@ -16,7 +16,7 @@ class EdgedLabel: UILabel {
         font: UIFont,
         textAlignment: NSTextAlignment = .left,
         insets: UIEdgeInsets = .zero,
-        textColor: UIColor? = .systemBackground,
+        textColor: UIColor? = .label,
         backgroundColor: UIColor? = .clear,
         borderColor: CGColor? = nil,
         borderWidth: CGFloat? = nil,

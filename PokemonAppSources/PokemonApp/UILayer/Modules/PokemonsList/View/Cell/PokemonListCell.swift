@@ -8,11 +8,16 @@
 import SnapKit
 import UIKit
 
+protocol ImageDownloaderDelegate {
+    func setImageForImageView(_ imageView: UIImageView, imageURL: URL)
+}
+
 struct PokemonCellModel {
     let number: Int
     let name: String
-    let elements: [ElementModel]
+    let elements: [TypeOfPower]
     let iconName: String
+    let delegate: ImageDownloaderDelegate
 
     var mainColor: UIColor? {
         elements.first?.color
@@ -26,6 +31,10 @@ struct ElementModel {
 }
 
 final class PokemonTableListCell: UITableViewCell {
+    
+    private var delegate: ImageDownloaderDelegate?
+
+    
     private let numberLabel: UILabel = {
         let label = UILabel()
         label.font = FontStyle.header1.font()
@@ -117,8 +126,9 @@ final class PokemonTableListCell: UITableViewCell {
 
 extension PokemonTableListCell {
     func configure(with model: PokemonCellModel?) {
+        delegate = model?.delegate
         numberLabel.text = "№" + (model?.number.description ?? "")
-        nameLabel.text = model?.name
+        nameLabel.text = model?.name.capitalized
 
         elementsStackView.arrangedSubviews.forEach {
             elementsStackView.removeArrangedSubview($0)
@@ -133,8 +143,12 @@ extension PokemonTableListCell {
                 make.height.equalToSuperview()
             }
         }
-        contentView.backgroundColor = model?.mainColor?.withAlphaComponent(0.1)
+        contentView.backgroundColor = model?.mainColor?.withAlphaComponent(0.2)
         iconBackground.backgroundColor = model?.mainColor
+        
+        if let url = URL(string: model?.iconName ?? "") {
+            delegate?.setImageForImageView(pokemonIconView, imageURL: url)
+        }
     }
 
     @objc func buttonTapped(_ sender: UIButton) {

@@ -14,8 +14,11 @@ class PokemonsListModule: TabBarViewProtocol {
     private let view: PokemonsListViewInput
 
     init() {
+        let networkManager = PokemonAPI()
+
         let interactor = PokemonsListInteractor()
         interactor.output = presenter
+        interactor.pokemonApiManager = networkManager
 
         view = PokemonsListViewController()
         view.output = presenter

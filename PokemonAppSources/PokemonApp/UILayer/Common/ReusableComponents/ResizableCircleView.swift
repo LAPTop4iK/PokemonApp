@@ -8,14 +8,21 @@
 import UIKit
 
 class ResizableCircleView: UIView {
-
     // MARK: - Properties
 
     var sizeRatio: CGFloat = 6
     var shapeRatio: CGFloat = 4
 
     var heightRange: ClosedRange<CGFloat>? {
-        didSet { setNeedsDisplay() }
+        didSet {
+            setNeedsDisplay()
+        }
+    }
+
+    var baseColor: UIColor = .systemYellow {
+        didSet {
+            setNeedsDisplay()
+        }
     }
 
     // MARK: - Functions
@@ -48,19 +55,25 @@ class ResizableCircleView: UIView {
         context.clip()
 
         // Render gradient
-        let colors: [CGColor] = [UIColor.orange.cgColor, UIColor.red.cgColor]
+        let lighterColor = baseColor.lighter(by: 20) ?? baseColor
+        let colors: [CGColor] = [baseColor.cgColor, lighterColor.cgColor]
         let locations: [CGFloat] = [0, 1]
 
         if let gradient = CGGradient(colorsSpace: CGColorSpaceCreateDeviceRGB(), colors: colors as CFArray, locations: locations) {
             context.drawLinearGradient(gradient, start: bounds.origin, end: CGPoint(x: bounds.maxX, y: bounds.maxY), options: [])
         }
     }
+
+    func setBaseColor(_ color: UIColor?) {
+        guard let color else { return }
+
+        baseColor = color
+    }
 }
 
 // MARK: - Private
 
 private extension ResizableCircleView {
-
     func setup() {
         layer.mask = CAShapeLayer()
         setNeedsDisplay()
@@ -89,5 +102,4 @@ private extension ResizableCircleView {
         let coef = (bounds.height - range.lowerBound) / (range.upperBound - range.lowerBound)
         return max(CGFloat.leastNonzeroMagnitude, min(coef, 1.75)) * shapeRatio
     }
-
 }

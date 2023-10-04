@@ -13,6 +13,7 @@ class PokemonDetailPresenter {
     weak var output: PokemonDetailModuleOutput?
     var interactor: PokemonDetailInteractorInput!
     var router: PokemonDetailRouterInput!
+    var id: Int!
 
     private var closeView: (() -> ())?
     private var closeImage: UIImage?
@@ -39,12 +40,12 @@ extension PokemonDetailPresenter {
 
 // MARK: - PokemonDetailViewOutput
 extension PokemonDetailPresenter: PokemonDetailViewOutput {
-    func viewIsReady() {
-        view.setupNavigationBar(title: "PokemonDetail")
+    func viewIsReady() async {
+        DispatchQueue.main.async {
+            self.view.setupNavigationBar(title: "PokemonsList")
+        }
         
-        let model = PokemonDetailModel(id: 1, types: [.init(type: .init(name: "flame"))], name: "Pikachu", sprites: .init(frontDefault: ""))
-        
-        view.configureViewWith(model: model)
+        try? await  interactor.getPokemonDetailFor(id: id)
     }
     
     func tapNavigationLeftBarButton() {
@@ -54,5 +55,25 @@ extension PokemonDetailPresenter: PokemonDetailViewOutput {
 
 // MARK: - PokemonDetailInteractorOutput
 extension PokemonDetailPresenter: PokemonDetailInteractorOutput {
+    func getPokemonDetailSuccess(model: CompletePokemonInfo?) {
+        guard let model else { return }
+        DispatchQueue.main.async {
+            self.view.configureViewWith(model: model, imageDelegate: self)
+        }
+    }
+    
+    func getPokemonDetailFail(error: String) {
+        debugPrint(error)
+    }
+}
 
+extension PokemonDetailPresenter: ImageDownloaderDelegate {
+    func setImageForImageView(_ imageView: UIImageView, imageURL: URL) {
+        
+        //            imageView.showRotationLoader(constantY: 0)
+        imageView.loadImageAsynchronouslyFrom(url: imageURL) { _ in }
+            //                imageView.hideRotationLoader()
+            
+        }
+        
 }

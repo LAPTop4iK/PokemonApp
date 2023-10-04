@@ -5,10 +5,12 @@
 //  Created by Mikita Laptsionak on 03/10/2023.
 //
 
-import UIKit
 import SnapKit
+import UIKit
 
 final class PokemonDetailHeaderView: UIView {
+    private var delegate: ImageDownloaderDelegate?
+    
     private let circleView = ResizableCircleView()
     
     private lazy var pokemonImageView: UIImageView = {
@@ -20,7 +22,7 @@ final class PokemonDetailHeaderView: UIView {
     private let nameLabel: UILabel = {
         let label = UILabel()
         label.textAlignment = .left
-        label.font = FontStyle.text1.font()
+        label.font = FontStyle.title1.font()
         return label
     }()
     
@@ -34,14 +36,14 @@ final class PokemonDetailHeaderView: UIView {
     private let elementsStackView: UIStackView = {
         let stackView = UIStackView()
         stackView.alignment = .leading
-        stackView.distribution = .fill
+        stackView.distribution = .fillProportionally
         stackView.spacing = 4
         return stackView
     }()
     
     let descriptionLabel: UILabel = {
         let label = UILabel()
-        label.font = FontStyle.header1.font()
+        label.font = FontStyle.description.font()
         label.textAlignment = .left
         label.numberOfLines = 0
         return label
@@ -53,23 +55,23 @@ final class PokemonDetailHeaderView: UIView {
         let stackView = UIStackView()
         stackView.axis = .vertical
         stackView.distribution = .fillProportionally
-        stackView.spacing = 5
+        stackView.alignment = .top
         return stackView
     }()
     
     private lazy var stackLeft: UIStackView = {
         let stackLeft = UIStackView()
         stackLeft.axis = .vertical
-        stackLeft.distribution = .fillProportionally
-        stackLeft.alignment = .top
+        stackLeft.distribution = .fill
+        stackLeft.alignment = .fill
         return stackLeft
     }()
 
     private lazy var stackRight: UIStackView = {
         let stackRight = UIStackView()
         stackRight.axis = .vertical
-        stackRight.distribution = .fillProportionally
-        stackRight.alignment = .top
+        stackRight.distribution = .fill
+        stackRight.alignment = .fill
         return stackRight
     }()
 
@@ -77,6 +79,7 @@ final class PokemonDetailHeaderView: UIView {
         let outerStack = UIStackView()
         outerStack.axis = .horizontal
         outerStack.distribution = .fillEqually
+        outerStack.spacing = 20
         outerStack.alignment = .top
         return outerStack
     }()
@@ -85,7 +88,7 @@ final class PokemonDetailHeaderView: UIView {
         let stackView = UIStackView()
         stackView.axis = .vertical
         stackView.distribution = UIStackView.Distribution.equalSpacing
-        stackView.spacing = 30
+        stackView.spacing = 20
         return stackView
     }()
     
@@ -97,37 +100,56 @@ final class PokemonDetailHeaderView: UIView {
         setupConstraints()
     }
     
+    @available(*, unavailable)
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func configureWith(model: PokemonDetailModel) {
+    func configureWith(model: CompletePokemonInfo, delegate: ImageDownloaderDelegate) {
+        self.delegate = delegate
+        let detail = model.detail
+        let description = model.species
+        
+        circleView.setBaseColor(detail.mainColor)
+        
         if let image = UIImage(systemName: "flame") {
-                pokemonImageView.image = image
-                let newImageSize = CGSize(width: image.size.width * 3, height: image.size.height * 3)
-                pokemonImageView.snp.updateConstraints { make in
-                    make.height.equalTo(newImageSize.height)
-                    make.width.equalTo(newImageSize.width)
-                }
+            let newImageSize = CGSize(width: image.size.width * 10, height: image.size.height * 10)
+            pokemonImageView.snp.updateConstraints { make in
+                make.height.equalTo(newImageSize.height)
+                make.width.equalTo(newImageSize.width)
             }
+        }
         
-        nameLabel.text = model.name
-        numberLabel.text = "№+\(model.id)"
-        descriptionLabel.text = "Очень длинный текст, который занимает несколько строк и должен быть полностью видимым в UIStackView, чтобы пользователь мог прочитать всю информацию."
-        
-                let model = ShortInfoCardModel(name: "test", value: "11.2123123123", image: "")
+        nameLabel.text = detail.name.capitalized
+        numberLabel.text = "№\(detail.id)"
+        descriptionLabel.text = description.flavorTextEntries.first?.flavorText.withoutNewlines
+        var models = [ShortInfoCardModel]()
+        models.append(.init(name: "Weight", value: detail.weight.description, image: ""))
+        models.append(.init(name: "Height", value: detail.height.description, image: ""))
                 
-                for _ in 0...12 {
-                    let view = ShortInfoCardView()
-                    view.configureFrom(model: model)
-                    if stackLeft.arrangedSubviews.count >= stackRight.arrangedSubviews.count {
-                        stackRight.addArrangedSubview(view)
-                    } else {
-                        stackLeft.addArrangedSubview(view)
-
-                    }
-                    outerStack.layoutIfNeeded()
-                }
+        for model in models {
+            let view = ShortInfoCardView()
+            view.configureFrom(model: model)
+            if stackLeft.arrangedSubviews.count >= stackRight.arrangedSubviews.count {
+                stackRight.addArrangedSubview(view)
+            } else {
+                stackLeft.addArrangedSubview(view)
+            }
+            outerStack.layoutIfNeeded()
+        }
+        
+        detail.types.forEach { type in
+            let elementView = ElementView()
+            elementView.configure(with: type)
+            elementsStackView.addArrangeSubviews(elementView)
+            elementView.snp.makeConstraints { make in
+                make.height.equalToSuperview()
+            }
+        }
+        
+        if let url = URL(string: detail.sprites.other.officialArtwork.frontDefault ?? "") {
+            delegate.setImageForImageView(pokemonImageView, imageURL: url)
+        }
     }
     
     func handleScrollWith(range: ClosedRange<CGFloat>?) {
@@ -149,6 +171,7 @@ private extension PokemonDetailHeaderView {
             separatorView,
             outerStack
         )
+        containerStackView.setCustomSpacing(35, after: pokemonImageView)
     }
     
     func setupConstraints() {

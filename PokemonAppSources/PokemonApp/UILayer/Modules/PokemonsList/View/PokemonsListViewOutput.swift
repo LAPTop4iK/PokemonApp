@@ -9,13 +9,13 @@
 import UIKit
 
 protocol PokemonsListViewOutput: SearchViewOutput {
-    func viewIsReady()
+    func viewIsReady() async
     func tapNavigationLeftBarButton()
 
     func didSelectRow(indexPath: IndexPath)
     func getCellModelForRow(at indexPath: IndexPath) -> PokemonCellModel
     func getNumberOfRows() -> Int
-    func endOfPage(indexPath: IndexPath)
+    func endOfPage(indexPath: IndexPath) async
 
     func search(_ text: String)
     func refresh()
