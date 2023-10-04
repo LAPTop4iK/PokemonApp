@@ -10,7 +10,7 @@ import UIKit
 final class MainTabBarAssembly {
     static func build() -> UITabBarController {
         let modules = [PokemonsListModule()]
-        var viewControllers = [UIViewController]()
+        var viewControllers = [UINavigationController]()
 
         let tabbar = MainTabBarController()
 
@@ -25,7 +25,7 @@ final class MainTabBarAssembly {
 }
 
 private extension MainTabBarAssembly {
-    private static func setupPageController(module: TabBarViewProtocol) -> UIViewController {
+    private static func setupPageController(module: TabBarViewProtocol) -> UINavigationController {
         let tabBarItem = UITabBarItem()
         tabBarItem.image = module.tabIcon
         tabBarItem.title = module.tabTitle
@@ -35,6 +35,6 @@ private extension MainTabBarAssembly {
         controller.tabBarItem = tabBarItem
         controller.title = module.tabTitle
 
-        return controller
+        return UINavigationController(rootViewController: controller)
     }
 }

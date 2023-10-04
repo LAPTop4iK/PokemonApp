@@ -45,7 +45,9 @@ extension PokemonsListPresenter: PokemonsListViewOutput {
         )
     }
 
-    func didSelectRow(indexPath _: IndexPath) {}
+    func didSelectRow(indexPath _: IndexPath) {
+        navigateToDetailFor(id: 0)
+    }
 
     func getNumberOfRows() -> Int {
         return 10
@@ -96,12 +98,16 @@ extension PokemonsListPresenter: PokemonsListInteractorOutput {
 }
 
 private extension PokemonsListPresenter {
-    private func updateModel(with model: PokemonList) {
+    func updateModel(with model: PokemonList) {
         let firstBatch = true
         if firstBatch || self.model == nil {
             self.model = model
         } else {
             self.model?.updatePageWith(model: model)
         }
+    }
+    
+    func navigateToDetailFor(id: Int) {
+        router.showPokemonDetailFor(id: id, from: view.viewController)
     }
 }

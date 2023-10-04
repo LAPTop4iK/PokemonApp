@@ -6,6 +6,8 @@
 //  Copyright © 2023 Innowise Group. All rights reserved.
 //
 
-import Foundation
+import UIKit
 
-protocol PokemonsListRouterInput: AnyObject {}
+protocol PokemonsListRouterInput: AnyObject {
+    func showPokemonDetailFor(id: Int, from: UIViewController)
+}
