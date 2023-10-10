@@ -1,6 +1,6 @@
 //
-//  File.swift
-//  
+//  Pokemon.swift
+//
 //
 //  Created by Mikita Laptsionak on 02/10/2023.
 //
@@ -17,15 +17,15 @@ struct PokemonDetail: Content {
     let name: String
     let sprites: Sprites
     let types: [TypeElement]
-    
+
     struct Sprites: Content {
         let front_default: String
     }
-    
+
     struct TypeElement: Content {
         let type: `Type`
     }
-    
+
     struct `Type`: Content {
         let name: String
     }

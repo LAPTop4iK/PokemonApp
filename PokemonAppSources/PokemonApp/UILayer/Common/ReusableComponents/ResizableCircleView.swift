@@ -46,7 +46,7 @@ class ResizableCircleView: UIView {
         }
     }
 
-    override func draw(_ rect: CGRect) {
+    override func draw(_: CGRect) {
         let path = clipingPath()
         (layer.mask as? CAShapeLayer)?.path = path
 

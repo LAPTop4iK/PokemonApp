@@ -9,18 +9,18 @@
 import UIKit
 
 class PokemonDetailViewController: UIViewController {
-    
     private let scrollView = UIScrollView()
     private let containerView = UIView()
-    
+
     private let headerView = PokemonDetailHeaderView()
 
     var output: PokemonDetailViewOutput?
 
     // MARK: Life cycle
+
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+
         setupViews()
         setupConstraints()
         setupTransparentNavigationBar()
@@ -29,14 +29,14 @@ class PokemonDetailViewController: UIViewController {
             await output?.viewIsReady()
         }
     }
-    
+
     override func viewDidLayoutSubviews() {
         scrollView.contentSize.height = headerView.frame.height
     }
-    
+
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        
+
         resetNavigationBar()
     }
 }
@@ -47,29 +47,29 @@ private extension PokemonDetailViewController {
         view.backgroundColor = .systemBackground
         view.addSubview(scrollView)
         scrollView.addSubview(containerView)
-        
+
         containerView.addSubview(headerView)
     }
-    
+
     func setupConstraints() {
         scrollView.snp.makeConstraints { make in
             make.edges.equalTo(view)
         }
-        
+
         containerView.snp.makeConstraints { make in
             make.edges.equalTo(scrollView)
             make.width.equalTo(self.scrollView)
             make.height.equalTo(self.scrollView)
         }
-        
+
         headerView.snp.makeConstraints { make in
             make.top.equalToSuperview().inset(-270)
             make.left.right.bottom.equalToSuperview()
         }
-        
+
         view.layoutIfNeeded()
     }
-    
+
     func setupTransparentNavigationBar() {
         navigationController?.navigationBar.setBackgroundImage(UIImage(), for: .default)
         navigationController?.navigationBar.shadowImage = UIImage()
@@ -87,21 +87,23 @@ private extension PokemonDetailViewController {
 }
 
 // MARK: - PokemonDetailViewInput
+
 extension PokemonDetailViewController: PokemonDetailViewInput {
     func setupNavigationBar(title: String) {
         navigationController?.title = title
     }
-    
-    func configureViewWith(model: CompletePokemonInfo, imageDelegate: ImageDownloaderDelegate) {
+
+    func configureViewWith(model: DetailPokemonInfo, imageDelegate: ImageDownloaderDelegate) {
         headerView.configureWith(model: model, delegate: imageDelegate)
     }
 }
 
 // MARK: - ScrollViewDelegate
+
 extension PokemonDetailViewController: UIScrollViewDelegate {
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         let yOffset = scrollView.contentOffset.y
-        
+
         let minCircleHeight: CGFloat = 50.0
         let maxCircleHeight: CGFloat = 300.0
 
@@ -116,10 +118,10 @@ extension PokemonDetailViewController: UIScrollViewDelegate {
             // Скроллим вниз: увеличиваем круг
             newHeight = max(maxCircleHeight, maxCircleHeight + (yOffset * resizeSpeedCoefficient))
         }
-        
+
         let lowerBound = min(newHeight, maxCircleHeight)
         let upperBound = max(newHeight, maxCircleHeight)
-        
-        headerView.handleScrollWith(range: lowerBound...upperBound)
+
+        headerView.handleScrollWith(range: lowerBound ... upperBound)
     }
 }

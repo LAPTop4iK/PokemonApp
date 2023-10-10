@@ -14,6 +14,7 @@ class PokemonDetailModule {
         let interactor = PokemonDetailInteractor()
         interactor.output = presenter
         interactor.pokemonApiManager = networkManager
+        interactor.coreDataManager = DataStoreManager<DetailPokemonInfoEntity, DetailPokemonInfo>()
 
         view = PokemonDetailViewController()
         view.output = presenter
@@ -26,11 +27,12 @@ class PokemonDetailModule {
 }
 
 // MARK: PokemonDetailModuleInput
+
 extension PokemonDetailModule: PokemonDetailModuleInput {
     func presentAsNavController(from vc: UIViewController) {
         presenter.presentAsNavController(from: vc)
     }
-    
+
     func present(from vc: UIViewController) {
         presenter.present(from: vc)
     }

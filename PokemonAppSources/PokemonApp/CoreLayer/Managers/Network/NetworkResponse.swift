@@ -7,6 +7,6 @@
 
 import Foundation
 
-public protocol NetworkResponse: Codable, Encodable { }
+public protocol NetworkResponse: Codable, Encodable {}
 
-extension Array: NetworkResponse where Element: NetworkResponse { }
+extension Array: NetworkResponse where Element: NetworkResponse {}

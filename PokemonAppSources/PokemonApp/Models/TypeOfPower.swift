@@ -27,12 +27,12 @@ enum TypeOfPower: String, CaseIterable {
     case grass
     case dark
     case fire
-    
+
     var color: UIColor {
-        return UIColor(named: self.rawValue) ?? UIColor.systemBackground
+        return UIColor(named: rawValue) ?? UIColor.systemBackground
     }
-    
+
     var image: UIImage? {
-        return UIImage(named: self.rawValue)
+        return UIImage(named: rawValue)
     }
 }

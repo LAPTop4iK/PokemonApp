@@ -9,6 +9,6 @@
 import Foundation
 
 protocol PokemonsListInteractorOutput: AnyObject {
-    func getPokemonsSuccess(model: PokemonAPIResponse?)
+    func getPokemonsSuccess(model: ListPokemonModel?)
     func getPokemonsFail(error: String)
 }

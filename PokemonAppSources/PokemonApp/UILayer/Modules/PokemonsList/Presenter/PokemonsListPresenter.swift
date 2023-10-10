@@ -11,7 +11,7 @@ import UIKit
 class PokemonsListPresenter {
     private var paginator: Paginator?
     private var imageCache = [URL: UIImage]()
-    var model: PokemonAPIResponse?
+    var model: ListPokemonModel?
 
     struct DataSourceModel {
         var cellModel: PokemonCellModel
@@ -33,17 +33,16 @@ extension PokemonsListPresenter {}
 // MARK: - PokemonsListViewOutput
 
 extension PokemonsListPresenter: PokemonsListViewOutput {
-    
     func getCellModelForRow(at indexPath: IndexPath) -> PokemonCellModel {
-        guard let model = self.model?.details[indexPath.row] else {
-            return PokemonCellModel(number: 0, name: "", elements: [], iconName: "", delegate: self)
+        guard let model = model?.details[indexPath.row] else {
+            return PokemonCellModel(number: 0, name: "", elements: [], imageUrl: nil, delegate: self)
         }
-        
+
         return PokemonCellModel(
             number: model.id,
             name: model.name,
             elements: model.types,
-            iconName: model.sprites.front_default,
+            imageUrl: model.imageUrl,
             delegate: self
         )
     }
@@ -57,7 +56,7 @@ extension PokemonsListPresenter: PokemonsListViewOutput {
     }
 
     func endOfPage(indexPath _: IndexPath) async {
-        await self.paginator?.getData()
+        await paginator?.getData()
     }
 
     func search(_: String) {}
@@ -69,30 +68,30 @@ extension PokemonsListPresenter: PokemonsListViewOutput {
     func refresh() {}
 
     func viewIsReady() async {
-            paginator = Paginator(
-                getData: { startIndex, batchSize in
-                    try? await self.interactor.getPokemons(startIndex: startIndex, countItems: batchSize)
-                },
-                onStart: {
-                    DispatchQueue.main.async {
-                        // Your UI update code for starting loading
-                    }
-                },
-                onNext: {
-                    DispatchQueue.main.async {
-                        self.view.displayFooterLoader()
-                    }
-                },
-                onError: { _ in }
-            )
-            
-            // Using await to call asynchronous method getData from actor
-            await paginator?.getData()
-            
-            DispatchQueue.main.async {
-                self.view.setupNavigationBar(title: "PokemonsList")
-            }
+        paginator = Paginator(
+            getData: { startIndex, batchSize in
+                try? await self.interactor.getPokemons(startIndex: startIndex, countItems: batchSize)
+            },
+            onStart: {
+                DispatchQueue.main.async {
+                    // Your UI update code for starting loading
+                }
+            },
+            onNext: {
+                DispatchQueue.main.async {
+                    self.view.displayFooterLoader()
+                }
+            },
+            onError: { _ in }
+        )
+
+        // Using await to call asynchronous method getData from actor
+        await paginator?.getData()
+
+        DispatchQueue.main.async {
+            self.view.setupNavigationBar(title: "PokemonsList")
         }
+    }
 
     func tapNavigationLeftBarButton() {
         closeView?()
@@ -103,7 +102,7 @@ extension PokemonsListPresenter: PokemonsListViewOutput {
 
 extension PokemonsListPresenter: PokemonsListInteractorOutput {
 //    @MainActor
-    func getPokemonsSuccess(model: PokemonAPIResponse?) {
+    func getPokemonsSuccess(model: ListPokemonModel?) {
         updateModel(with: model)
         DispatchQueue.main.async {
             self.view.reload()
@@ -131,21 +130,20 @@ extension PokemonsListPresenter: ImageDownloaderDelegate {
 //                imageView.hideRotationLoader()
             }
         }
-        
     }
 }
 
 private extension PokemonsListPresenter {
-    func updateModel(with model: PokemonAPIResponse?) {
+    func updateModel(with model: ListPokemonModel?) {
         guard let model else { return }
-        
+
         if self.model == nil {
             self.model = model
         } else {
             self.model?.updatePageWith(model: model)
         }
     }
-    
+
     func navigateToDetailFor(id: Int) {
         router.showPokemonDetailFor(id: id, from: view.viewController)
     }

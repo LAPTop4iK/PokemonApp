@@ -8,7 +8,6 @@
 import UIKit
 
 class EdgedLabel: UILabel {
-
     let insets: UIEdgeInsets
     let cornerRadius: CGFloat
 
@@ -32,18 +31,19 @@ class EdgedLabel: UILabel {
         self.backgroundColor = backgroundColor
         self.textColor = textColor
         self.numberOfLines = numberOfLines
-        self.layer.cornerRadius = cornerRadius
-        
+        layer.cornerRadius = cornerRadius
+
         if let borderColor, let borderWidth {
-            self.layer.borderWidth = borderWidth
-            self.layer.borderColor = borderColor
+            layer.borderWidth = borderWidth
+            layer.borderColor = borderColor
         }
 
         clipsToBounds = cornerRadius > 0
         adjustsFontForContentSizeCategory = true
     }
 
-    required init?(coder: NSCoder) {
+    @available(*, unavailable)
+    required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 
@@ -57,9 +57,8 @@ class EdgedLabel: UILabel {
         contentSize.width += insets.left + insets.right
         return contentSize
     }
-    
+
     func addLineOfText(_ text: String) {
         self.text = (self.text ?? "") + "\n\(text)"
     }
 }
-

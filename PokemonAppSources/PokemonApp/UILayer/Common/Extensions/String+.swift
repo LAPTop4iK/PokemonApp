@@ -9,6 +9,6 @@ import Foundation
 
 extension String {
     var withoutNewlines: String {
-        return self.replacingOccurrences(of: "\n", with: " ")
+        return replacingOccurrences(of: "\n", with: " ")
     }
 }

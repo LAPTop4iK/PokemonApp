@@ -12,6 +12,6 @@ protocol PokemonDetailViewInput: UIViewController, Loadable, Presentable {
     var output: PokemonDetailViewOutput? { get set }
 
     func setupNavigationBar(title: String)
-    
-    func configureViewWith(model: CompletePokemonInfo, imageDelegate: ImageDownloaderDelegate)
+
+    func configureViewWith(model: DetailPokemonInfo, imageDelegate: ImageDownloaderDelegate)
 }

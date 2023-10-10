@@ -9,33 +9,38 @@ import Foundation
 class PokemonAPI {
     let networkManager = NetworkManager()
     let baseURL = "https://pokeapi.co/api/v2/"
-    
+
     // Method to fetch Pokemons with Details using above two methods
-    func fetchPokemons(limit: Int, offset: Int) async throws -> PokemonAPIResponse {
+    func fetchPokemons(limit: Int, offset: Int) async throws -> ListPokemonModel {
         // Fetch the Pokemon List
         let pokemonList = try await fetchPokemonsList(limit: limit, offset: offset)
-        
+
         // Fetch Details of each Pokemon
         let details = try await fetchPokemonDetails(from: pokemonList)
-        
-        return PokemonAPIResponse(
+
+        return ListPokemonModel(
             count: pokemonList.count,
             next: pokemonList.next,
             previous: pokemonList.previous,
             details: details.sorted { $0.id < $1.id }
         )
     }
-    
-    func fetchCompletePokemonInfoFor(id: Int) async throws -> CompletePokemonInfo {
-            let pokemonDetail = try await fetchPokemonDetail(id: id)
-            let pokemonSpecies = try await fetchPokemonSpecies(id: id)
-        
-            let completePokemonInfo = CompletePokemonInfo(
-                detail: pokemonDetail,
-                species: pokemonSpecies
-            )
-            return completePokemonInfo
-        }
+
+    func fetchCompletePokemonInfoFor(id: Int) async throws -> DetailPokemonInfo {
+        let pokemonDetail = try await fetchPokemonDetail(id: id)
+        let pokemonSpecies = try await fetchPokemonSpecies(id: id)
+
+        let completePokemonInfo = DetailPokemonInfo(
+            name: pokemonDetail.name,
+            id: pokemonDetail.id,
+            weight: pokemonDetail.weight,
+            height: pokemonDetail.height,
+            types: pokemonDetail.types,
+            imageUrl: pokemonDetail.sprites.other.officialArtwork.frontDefault,
+            flavorText: pokemonSpecies.firstEnglishFlavorText
+        )
+        return completePokemonInfo
+    }
 }
 
 private extension PokemonAPI {
@@ -49,11 +54,11 @@ private extension PokemonAPI {
         let pokemonList = try await networkManager.getNetworkResponse(request)
         return pokemonList
     }
-    
+
     // Second Method: Fetch Details of each Pokemon in List
     func fetchPokemonDetails(from pokemonList: PokemonList) async throws -> [PokemonDetail] {
         var pokemonDetails: [PokemonDetail] = []
-        
+
         try await withThrowingTaskGroup(of: PokemonDetail.self) { group in
             for pokemon in pokemonList.results {
                 group.addTask {
@@ -66,7 +71,7 @@ private extension PokemonAPI {
                     return detail
                 }
             }
-            
+
             for try await detail in group {
                 pokemonDetails.append(detail)
                 debugPrint("Aggregating detail...")
@@ -74,24 +79,24 @@ private extension PokemonAPI {
         }
         return pokemonDetails
     }
-    
+
     func fetchPokemonDetail(id: Int) async throws -> PokemonDetailModel {
         let urlString = "\(baseURL)pokemon/\(id.description)"
-            guard let url = URL(string: urlString) else {
-                throw URLError(.badURL)
-            }
-            let request = NetworkRequest<PokemonDetailModel>(method: .get, url: url)
-            return try await networkManager.getNetworkResponse(request)
+        guard let url = URL(string: urlString) else {
+            throw URLError(.badURL)
         }
-        
-        func fetchPokemonSpecies(id: Int) async throws -> PokemonSpecies {
-            let urlString = "\(baseURL)pokemon-species/\(id.description)"
-            guard let url = URL(string: urlString) else {
-                throw URLError(.badURL)
-            }
-            let request = NetworkRequest<PokemonSpecies>(method: .get, url: url)
-            return try await networkManager.getNetworkResponse(request)
+        let request = NetworkRequest<PokemonDetailModel>(method: .get, url: url)
+        return try await networkManager.getNetworkResponse(request)
+    }
+
+    func fetchPokemonSpecies(id: Int) async throws -> PokemonSpecies {
+        let urlString = "\(baseURL)pokemon-species/\(id.description)"
+        guard let url = URL(string: urlString) else {
+            throw URLError(.badURL)
         }
+        let request = NetworkRequest<PokemonSpecies>(method: .get, url: url)
+        return try await networkManager.getNetworkResponse(request)
+    }
 }
 
 private extension NetworkRequest where ResponseType == PokemonList {
@@ -100,7 +105,7 @@ private extension NetworkRequest where ResponseType == PokemonList {
         guard let url = URL(string: urlString) else {
             fatalError("Invalid URL: \(urlString)")
         }
-        
+
         return NetworkRequest<PokemonList>(
             method: .get,
             url: url,

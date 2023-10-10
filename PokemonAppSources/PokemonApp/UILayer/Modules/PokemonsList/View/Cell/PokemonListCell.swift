@@ -16,7 +16,7 @@ struct PokemonCellModel {
     let number: Int
     let name: String
     let elements: [TypeOfPower]
-    let iconName: String
+    let imageUrl: String?
     let delegate: ImageDownloaderDelegate
 
     var mainColor: UIColor? {
@@ -31,10 +31,8 @@ struct ElementModel {
 }
 
 final class PokemonTableListCell: UITableViewCell {
-    
     private var delegate: ImageDownloaderDelegate?
 
-    
     private let numberLabel: UILabel = {
         let label = UILabel()
         label.font = FontStyle.header1.font()
@@ -145,8 +143,8 @@ extension PokemonTableListCell {
         }
         contentView.backgroundColor = model?.mainColor?.withAlphaComponent(0.2)
         iconBackground.backgroundColor = model?.mainColor
-        
-        if let url = URL(string: model?.iconName ?? "") {
+
+        if let url = URL(string: model?.imageUrl ?? "") {
             delegate?.setImageForImageView(pokemonIconView, imageURL: url)
         }
     }

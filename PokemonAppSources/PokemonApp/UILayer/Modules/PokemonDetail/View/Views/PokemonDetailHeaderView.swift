@@ -10,29 +10,29 @@ import UIKit
 
 final class PokemonDetailHeaderView: UIView {
     private var delegate: ImageDownloaderDelegate?
-    
+
     private let circleView = ResizableCircleView()
-    
+
     private lazy var pokemonImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFit
         return imageView
     }()
-    
+
     private let nameLabel: UILabel = {
         let label = UILabel()
         label.textAlignment = .left
         label.font = FontStyle.title1.font()
         return label
     }()
-    
+
     private let numberLabel: UILabel = {
         let label = UILabel()
         label.textAlignment = .left
         label.font = FontStyle.header1.font()
         return label
     }()
-    
+
     private let elementsStackView: UIStackView = {
         let stackView = UIStackView()
         stackView.alignment = .leading
@@ -40,7 +40,7 @@ final class PokemonDetailHeaderView: UIView {
         stackView.spacing = 4
         return stackView
     }()
-    
+
     let descriptionLabel: UILabel = {
         let label = UILabel()
         label.font = FontStyle.description.font()
@@ -48,9 +48,9 @@ final class PokemonDetailHeaderView: UIView {
         label.numberOfLines = 0
         return label
     }()
-    
+
     let descriptionContainer = UIView()
-    
+
     private let labelsStackView: UIStackView = {
         let stackView = UIStackView()
         stackView.axis = .vertical
@@ -58,7 +58,7 @@ final class PokemonDetailHeaderView: UIView {
         stackView.alignment = .top
         return stackView
     }()
-    
+
     private lazy var stackLeft: UIStackView = {
         let stackLeft = UIStackView()
         stackLeft.axis = .vertical
@@ -83,7 +83,7 @@ final class PokemonDetailHeaderView: UIView {
         outerStack.alignment = .top
         return outerStack
     }()
-    
+
     let containerStackView: UIStackView = {
         let stackView = UIStackView()
         stackView.axis = .vertical
@@ -91,27 +91,25 @@ final class PokemonDetailHeaderView: UIView {
         stackView.spacing = 20
         return stackView
     }()
-    
+
     let separatorView = SeparatorView()
-    
+
     init() {
         super.init(frame: .zero)
         setupViews()
         setupConstraints()
     }
-    
+
     @available(*, unavailable)
-    required init?(coder: NSCoder) {
+    required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
-    func configureWith(model: CompletePokemonInfo, delegate: ImageDownloaderDelegate) {
+
+    func configureWith(model: DetailPokemonInfo, delegate: ImageDownloaderDelegate) {
         self.delegate = delegate
-        let detail = model.detail
-        let description = model.species
-        
-        circleView.setBaseColor(detail.mainColor)
-        
+
+        circleView.setBaseColor(model.mainColor)
+
         if let image = UIImage(systemName: "flame") {
             let newImageSize = CGSize(width: image.size.width * 10, height: image.size.height * 10)
             pokemonImageView.snp.updateConstraints { make in
@@ -119,14 +117,14 @@ final class PokemonDetailHeaderView: UIView {
                 make.width.equalTo(newImageSize.width)
             }
         }
-        
-        nameLabel.text = detail.name.capitalized
-        numberLabel.text = "№\(detail.id)"
-        descriptionLabel.text = description.flavorTextEntries.first?.flavorText.withoutNewlines
+
+        nameLabel.text = model.name.capitalized
+        numberLabel.text = "№\(model.id)"
+        descriptionLabel.text = model.flavorText
         var models = [ShortInfoCardModel]()
-        models.append(.init(name: "Weight", value: detail.weight.description, image: ""))
-        models.append(.init(name: "Height", value: detail.height.description, image: ""))
-                
+        models.append(.init(name: "Weight", value: model.weight.description, image: ""))
+        models.append(.init(name: "Height", value: model.height.description, image: ""))
+
         for model in models {
             let view = ShortInfoCardView()
             view.configureFrom(model: model)
@@ -137,8 +135,8 @@ final class PokemonDetailHeaderView: UIView {
             }
             outerStack.layoutIfNeeded()
         }
-        
-        detail.types.forEach { type in
+
+        model.types.forEach { type in
             let elementView = ElementView()
             elementView.configure(with: type)
             elementsStackView.addArrangeSubviews(elementView)
@@ -146,12 +144,12 @@ final class PokemonDetailHeaderView: UIView {
                 make.height.equalToSuperview()
             }
         }
-        
-        if let url = URL(string: detail.sprites.other.officialArtwork.frontDefault ?? "") {
+
+        if let url = URL(string: model.imageUrl ?? "") {
             delegate.setImageForImageView(pokemonImageView, imageURL: url)
         }
     }
-    
+
     func handleScrollWith(range: ClosedRange<CGFloat>?) {
         circleView.heightRange = range
     }
@@ -173,36 +171,36 @@ private extension PokemonDetailHeaderView {
         )
         containerStackView.setCustomSpacing(35, after: pokemonImageView)
     }
-    
+
     func setupConstraints() {
         circleView.snp.makeConstraints { make in
             make.top.equalToSuperview()
             make.width.height.equalTo(500)
             make.centerX.equalToSuperview()
         }
-        
+
         elementsStackView.snp.makeConstraints { make in
             make.left.right.equalToSuperview()
             make.height.equalTo(36)
         }
-        
+
         labelsStackView.snp.makeConstraints { make in
             make.height.equalTo(75)
         }
-        
+
         descriptionLabel.snp.makeConstraints { make in
             make.leading.trailing.top.bottom.equalToSuperview()
         }
-        
+
         separatorView.snp.makeConstraints { make in
             make.height.equalTo(1)
         }
-        
+
         containerStackView.snp.makeConstraints { make in
             make.top.equalTo(circleView.snp.bottom).offset(-250)
             make.leading.trailing.equalToSuperview().inset(16)
         }
-        
+
         outerStack.snp.makeConstraints { make in
             make.bottom.equalToSuperview()
         }

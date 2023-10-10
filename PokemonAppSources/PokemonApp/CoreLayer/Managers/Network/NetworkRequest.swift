@@ -12,10 +12,10 @@ public struct NetworkRequest<ResponseType: NetworkResponse> {
     public let url: URL
     public var headers: [String: String]?
     public var body: Data?
-    
+
     public init(
         method: NetworkRequest<ResponseType>.HTTPMethod,
-        url: URL, 
+        url: URL,
         headers: [String: String]? = nil,
         body: Data? = nil
     ) {

@@ -10,6 +10,6 @@ import Foundation
 
 protocol PokemonDetailInteractorInput: AnyObject {
     var output: PokemonDetailInteractorOutput? { get set }
-    
+
     func getPokemonDetailFor(id: Int) async throws
 }

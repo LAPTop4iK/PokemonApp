@@ -8,4 +8,4 @@
 
 import UIKit
 
-protocol PokemonDetailModuleInput: AnyObject { }
+protocol PokemonDetailModuleInput: AnyObject {}
