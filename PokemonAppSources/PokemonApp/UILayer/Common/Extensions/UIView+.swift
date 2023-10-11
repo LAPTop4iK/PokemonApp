@@ -27,7 +27,7 @@ extension UIView {
         if self.viewWithTag(Constants.ViewTag.loader) != nil { return }
         let loaderBackgroundView = UIView.init(frame: self.bounds)
         if needWhiteBackground {
-            loaderBackgroundView.backgroundColor = UIColor(.white).withAlphaComponent(0.8)
+            loaderBackgroundView.backgroundColor = UIColor.systemBackground.withAlphaComponent(0.8)
         }
         loaderBackgroundView.tag = Constants.ViewTag.loader
         let loaderImageView = UIImageView(image: UIImage(named: "loader"))

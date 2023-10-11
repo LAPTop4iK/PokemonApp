@@ -40,10 +40,10 @@ extension PokemonsListInteractor: PokemonsListInteractorInput {
                     details: cachedData
                 )
 
-                output?.getPokemonsSuccess(model: response)
+                await output?.getPokemonsSuccess(model: response)
             } else {
                 let pokemons = try await pokemonApiManager?.fetchPokemons(limit: countItems, offset: startIndex)
-                output?.getPokemonsSuccess(model: pokemons)
+                await output?.getPokemonsSuccess(model: pokemons)
                 if let pokemons {
                     try await coreDataManager?.save(models: pokemons.details)
                 }

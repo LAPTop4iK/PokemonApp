@@ -143,7 +143,7 @@ extension PokemonTableListCell {
         }
         contentView.backgroundColor = model?.mainColor?.withAlphaComponent(0.2)
         iconBackground.backgroundColor = model?.mainColor
-
+        pokemonIconView.image = nil
         if let url = URL(string: model?.imageUrl ?? "") {
             delegate?.setImageForImageView(pokemonIconView, imageURL: url)
         }

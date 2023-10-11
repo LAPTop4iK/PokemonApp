@@ -54,15 +54,6 @@ class PokemonsListViewController: UIViewController {
         return view
     }()
 
-    private lazy var searchViewInput: SearchViewInput = {
-        let view = SearchView(
-            presenter: self.output,
-            delegate: self
-        )
-
-        return view
-    }()
-
     // MARK: Life cycle
 
     override func viewDidLoad() {
@@ -78,7 +69,7 @@ class PokemonsListViewController: UIViewController {
 private extension PokemonsListViewController {
     @objc func refresh() {
         headerLoader.frame = refreshControl.bounds
-//        self.headerLoader.showRotationLoader(constantY: 0)
+        self.headerLoader.showRotationLoader(constantY: 0, needWhiteBackground: false)
         output?.refresh()
     }
 
@@ -99,15 +90,7 @@ extension PokemonsListViewController: PokemonsListViewInput {
         hideRefreshControl()
         tableView.reloadData()
     }
-
-    func clearSearch() {
-        searchViewInput.clearSearch()
-    }
-
-    func disableSearch() {
-        searchViewInput.disableSearch()
-    }
-
+    
     func displayFooterLoader() {
         tableView.tableFooterView?.isHidden = false
         self.footerLoader.showRotationLoader(constantY: 0)
@@ -167,7 +150,6 @@ extension PokemonsListViewController: UITableViewDataSource, UITableViewDelegate
         } else {
             if let cell: PokemonTableListCell = tableView.dequeueReusableCell(withIdentifier: PokemonTableListCell.reuseIdentifier) as? PokemonTableListCell {
                 cell.configure(with: output?.getCellModelForRow(at: indexPath))
-//                cell.delegate = self
                 lastIndexPath = indexPath
                 return cell
             } else {
@@ -192,26 +174,5 @@ extension PokemonsListViewController: UITableViewDataSource, UITableViewDelegate
                 }
             }
         }
-    }
-}
-
-extension PokemonsListViewController: UITextFieldDelegate {
-    func textFieldDidBeginEditing(_: UITextField) {
-        output?.search("")
-    }
-
-    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-        textField.resignFirstResponder()
-        return true
-    }
-
-    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
-        if let text = textField.text {
-            let oldText = NSString(string: text)
-            let newText: String = oldText.replacingCharacters(in: range, with: string)
-
-            output?.search(newText)
-        }
-        return true
     }
 }

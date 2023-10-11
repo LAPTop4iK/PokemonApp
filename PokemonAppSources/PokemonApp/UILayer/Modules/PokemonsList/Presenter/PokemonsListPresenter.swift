@@ -58,13 +58,12 @@ extension PokemonsListPresenter: PokemonsListViewOutput {
         await paginator?.getData()
     }
 
-    func search(_: String) {}
+    func refresh() {
+        Task {
+            await paginator?.refresh()
+        }
+    }
 
-    func didSetActive() {}
-
-    func didSetNotActive() {}
-
-    func refresh() {}
 
     func viewIsReady() async {
         paginator = Paginator(
@@ -102,17 +101,18 @@ extension PokemonsListPresenter: PokemonsListViewOutput {
 
 extension PokemonsListPresenter: PokemonsListInteractorOutput {
 
-    func getPokemonsSuccess(model: ListPokemonModel?) {
-        updateModel(with: model)
+    func getPokemonsSuccess(model: ListPokemonModel?) async {
+        await self.updateModel(with: model)
+
         DispatchQueue.main.async {
             self.view.reload()
             self.view.hideFooterLoader()
             self.view.hideRefreshControl()
             self.view.hideLoader()
         }
-        Task {
-            await paginator?.update(startIndex: self.model?.details.count ?? 0, responseSize: model?.details.count ?? 0)
-        }
+
+        await paginator?.update(startIndex: self.model?.details.count ?? 0,
+                                     responseSize: model?.details.count ?? 0)
     }
 
     func getPokemonsFail(error: String) {
@@ -121,6 +121,9 @@ extension PokemonsListPresenter: PokemonsListInteractorOutput {
             self.view.hideRefreshControl()
             self.view.hideLoader()
             self.view.showAlert(msg: error)
+        }
+        Task {
+            await self.paginator?.wasFail()
         }
     }
 }
@@ -144,10 +147,10 @@ extension PokemonsListPresenter: ImageDownloaderDelegate {
 }
 
 private extension PokemonsListPresenter {
-    func updateModel(with model: ListPokemonModel?) {
-        guard let model else { return }
-
-        if self.model == nil {
+    func updateModel(with model: ListPokemonModel?) async {
+        guard let model = model else { return }
+        let firstBatch = await self.paginator?.firstBatch ?? true
+        if firstBatch || self.model == nil {
             self.model = model
         } else {
             self.model?.updatePageWith(model: model)

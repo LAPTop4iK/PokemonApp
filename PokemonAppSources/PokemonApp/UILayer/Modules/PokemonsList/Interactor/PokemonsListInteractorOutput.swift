@@ -9,6 +9,6 @@
 import UIKit
 
 protocol PokemonsListInteractorOutput: AnyObject {
-    func getPokemonsSuccess(model: ListPokemonModel?)
+    func getPokemonsSuccess(model: ListPokemonModel?) async
     func getPokemonsFail(error: String)
 }

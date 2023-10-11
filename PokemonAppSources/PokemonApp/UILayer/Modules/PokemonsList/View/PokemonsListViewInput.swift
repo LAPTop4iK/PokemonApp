@@ -12,8 +12,6 @@ protocol PokemonsListViewInput: AnyObject, Presentable, Loadable {
     var output: PokemonsListViewOutput? { get set }
 
     func reload()
-    func clearSearch()
-    func disableSearch()
 
     func displayFooterLoader()
     func hideFooterLoader()

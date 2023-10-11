@@ -8,7 +8,7 @@
 
 import UIKit
 
-protocol PokemonsListViewOutput: SearchViewOutput {
+protocol PokemonsListViewOutput {
     func viewIsReady() async
     func tapNavigationLeftBarButton()
 
@@ -17,6 +17,5 @@ protocol PokemonsListViewOutput: SearchViewOutput {
     func getNumberOfRows() -> Int
     func endOfPage(indexPath: IndexPath) async
 
-    func search(_ text: String)
     func refresh()
 }
