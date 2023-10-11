@@ -110,17 +110,17 @@ extension PokemonsListViewController: PokemonsListViewInput {
 
     func displayFooterLoader() {
         tableView.tableFooterView?.isHidden = false
-//        self.footerLoader.showRotationLoader(constantY: 0)
+        self.footerLoader.showRotationLoader(constantY: 0)
     }
 
     func hideFooterLoader() {
-//        self.footerLoader.hideRotationLoader()
+        self.footerLoader.hideRotationLoader()
         tableView.tableFooterView?.isHidden = true
     }
 
     func hideRefreshControl() {
         refreshControl.endRefreshing()
-//        self.headerLoader.hideRotationLoader()
+        self.headerLoader.hideRotationLoader()
     }
 
     func selectRowAt(_ indexPath: IndexPath) {

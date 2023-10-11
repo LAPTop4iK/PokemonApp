@@ -6,10 +6,11 @@
 //  Copyright © 2023 Innowise Group. All rights reserved.
 //
 
-import Foundation
+import UIKit
 
 protocol PokemonsListInteractorInput: AnyObject {
     var output: PokemonsListInteractorOutput? { get set }
 
     func getPokemons(startIndex: Int, countItems: Int) async throws
+    func getImageWith(url: URL) async throws -> UIImage?
 }

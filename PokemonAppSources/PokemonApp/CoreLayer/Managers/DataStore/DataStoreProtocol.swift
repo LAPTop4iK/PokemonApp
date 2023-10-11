@@ -21,7 +21,7 @@ protocol DataStoreManagerProtocol {
     func save(model: Model) async throws
     func save(models: [Model]) async throws
 
-    func load(identifier: String?) async throws -> Model?
+    func load(identifier: String?, identifierType: IdentifierType) async throws -> Model?
     func load(offset: Int, limit: Int) async throws -> [Model]
 }
 

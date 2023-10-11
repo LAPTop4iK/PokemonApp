@@ -15,6 +15,7 @@ class PokemonDetailModule {
         interactor.output = presenter
         interactor.pokemonApiManager = networkManager
         interactor.coreDataManager = DataStoreManager<DetailPokemonInfoEntity, DetailPokemonInfo>()
+        interactor.imageManager = ImageManager()
 
         view = PokemonDetailViewController()
         view.output = presenter

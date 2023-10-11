@@ -6,18 +6,29 @@
 //  Copyright © 2023 Innowise Group. All rights reserved.
 //
 
-import Foundation
+import UIKit
 
 class PokemonDetailInteractor {
     weak var output: PokemonDetailInteractorOutput?
 
     var coreDataManager: DataStoreManager<DetailPokemonInfoEntity, DetailPokemonInfo>?
     var pokemonApiManager: PokemonAPI?
+    var imageManager: ImageManager?
 }
 
 // MARK: - PokemonDetailInteractorInput
 
 extension PokemonDetailInteractor: PokemonDetailInteractorInput {
+    func getImageWith(url: URL) async throws -> UIImage? {
+        do {
+            let imageData = try await imageManager?.fetchImage(withURL: url.description)
+            let imageModel = ImageModel(url: url.description, data: imageData)
+            return imageModel.image
+        } catch {
+            return nil
+        }
+    }
+    
     func getPokemonDetailFor(id: Int) async {
         do {
             if let localData = try await coreDataManager?.load(identifier: "\(id)") {

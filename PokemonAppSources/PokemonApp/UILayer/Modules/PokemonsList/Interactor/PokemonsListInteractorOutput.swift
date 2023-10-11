@@ -6,7 +6,7 @@
 //  Copyright © 2023 Innowise Group. All rights reserved.
 //
 
-import Foundation
+import UIKit
 
 protocol PokemonsListInteractorOutput: AnyObject {
     func getPokemonsSuccess(model: ListPokemonModel?)

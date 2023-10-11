@@ -92,7 +92,11 @@ final class PokemonDetailHeaderView: UIView {
         return stackView
     }()
 
-    let separatorView = SeparatorView()
+    let separatorView: SeparatorView = {
+        let view = SeparatorView()
+        view.isHidden = true
+        return view
+    }()
 
     init() {
         super.init(frame: .zero)
@@ -107,8 +111,9 @@ final class PokemonDetailHeaderView: UIView {
 
     func configureWith(model: DetailPokemonInfo, delegate: ImageDownloaderDelegate) {
         self.delegate = delegate
-
+        
         circleView.setBaseColor(model.mainColor)
+        separatorView.isHidden = false
 
         if let image = UIImage(systemName: "flame") {
             let newImageSize = CGSize(width: image.size.width * 10, height: image.size.height * 10)

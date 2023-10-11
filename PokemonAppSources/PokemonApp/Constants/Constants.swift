@@ -12,4 +12,8 @@ enum Constants {
         static let iPad = UIDevice.current.userInterfaceIdiom == .pad
         static let iPhone = UIDevice.current.userInterfaceIdiom == .phone
     }
+    
+    enum ViewTag {
+        static let loader = 50
+    }
 }

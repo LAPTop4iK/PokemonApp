@@ -10,7 +10,6 @@ import UIKit
 
 class PokemonsListPresenter {
     private var paginator: Paginator?
-    private var imageCache = [URL: UIImage]()
     var model: ListPokemonModel?
 
     struct DataSourceModel {
@@ -74,7 +73,7 @@ extension PokemonsListPresenter: PokemonsListViewOutput {
             },
             onStart: {
                 DispatchQueue.main.async {
-                    // Your UI update code for starting loading
+                    self.view.showLoader()
                 }
             },
             onNext: {
@@ -82,10 +81,11 @@ extension PokemonsListPresenter: PokemonsListViewOutput {
                     self.view.displayFooterLoader()
                 }
             },
-            onError: { _ in }
+            onError: { error in
+                self.getPokemonsFail(error: error.localizedDescription)
+            }
         )
 
-        // Using await to call asynchronous method getData from actor
         await paginator?.getData()
 
         DispatchQueue.main.async {
@@ -101,33 +101,43 @@ extension PokemonsListPresenter: PokemonsListViewOutput {
 // MARK: - PokemonsListInteractorOutput
 
 extension PokemonsListPresenter: PokemonsListInteractorOutput {
-//    @MainActor
+
     func getPokemonsSuccess(model: ListPokemonModel?) {
         updateModel(with: model)
         DispatchQueue.main.async {
             self.view.reload()
             self.view.hideFooterLoader()
             self.view.hideRefreshControl()
+            self.view.hideLoader()
         }
         Task {
             await paginator?.update(startIndex: self.model?.details.count ?? 0, responseSize: model?.details.count ?? 0)
         }
     }
 
-    func getPokemonsFail(error _: String) {}
+    func getPokemonsFail(error: String) {
+        DispatchQueue.main.async {
+            self.view.hideFooterLoader()
+            self.view.hideRefreshControl()
+            self.view.hideLoader()
+            self.view.showAlert(msg: error)
+        }
+    }
 }
 
 extension PokemonsListPresenter: ImageDownloaderDelegate {
     func setImageForImageView(_ imageView: UIImageView, imageURL: URL) {
-        if let image = imageCache[imageURL] {
-            imageView.image = image
-        } else {
-//            imageView.showRotationLoader(constantY: 0)
-            imageView.loadImageAsynchronouslyFrom(url: imageURL) { [weak self] image in
-                if let img = image {
-                    self?.imageCache[imageURL] = img
+        imageView.showRotationLoader(constantY: 0, needWhiteBackground: false)
+        Task {
+            do {
+                if let image = try await interactor?.getImageWith(url: imageURL) {
+                    DispatchQueue.main.async {
+                        imageView.image = image
+                    }
                 }
-//                imageView.hideRotationLoader()
+                DispatchQueue.main.async {
+                    imageView.hideRotationLoader()
+                }
             }
         }
     }

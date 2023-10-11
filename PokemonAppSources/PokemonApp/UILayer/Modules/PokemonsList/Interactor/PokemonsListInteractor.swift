@@ -6,18 +6,29 @@
 //  Copyright © 2023 Innowise Group. All rights reserved.
 //
 
-import Foundation
+import UIKit
 
 class PokemonsListInteractor {
     weak var output: PokemonsListInteractorOutput?
 
     var coreDataManager: DataStoreManager<ListPokemonEntity, PokemonDetail>?
     var pokemonApiManager: PokemonAPI?
+    var imageManager: ImageManager?
 }
 
 // MARK: - PokemonsListInteractorInput
 
 extension PokemonsListInteractor: PokemonsListInteractorInput {
+    func getImageWith(url: URL) async throws -> UIImage? {
+        do {
+            let imageData = try await imageManager?.fetchImage(withURL: url.description)
+            let imageModel = ImageModel(url: url.description, data: imageData)
+            return imageModel.image
+        } catch {
+            return nil
+        }
+    }
+    
     func getPokemons(startIndex: Int, countItems: Int) async {
         do {
             if let cachedData = try await coreDataManager?.load(offset: startIndex, limit: countItems),
@@ -38,7 +49,7 @@ extension PokemonsListInteractor: PokemonsListInteractorInput {
                 }
             }
         } catch {
-            debugPrint("Error: \(error.localizedDescription)")
+            output?.getPokemonsFail(error: error.localizedDescription)
         }
     }
 }

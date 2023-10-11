@@ -20,6 +20,7 @@ class PokemonsListModule: TabBarViewProtocol {
         interactor.output = presenter
         interactor.pokemonApiManager = networkManager
         interactor.coreDataManager = DataStoreManager<ListPokemonEntity, PokemonDetail>()
+        interactor.imageManager = ImageManager()
 
         view = PokemonsListViewController()
         view.output = presenter

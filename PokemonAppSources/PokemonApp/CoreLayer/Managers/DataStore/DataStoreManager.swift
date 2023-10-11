@@ -8,6 +8,11 @@
 import CoreData
 import Foundation
 
+enum IdentifierType {
+    case id
+    case url
+}
+
 class PersistentContainerWrapper {
     static let shared = PersistentContainerWrapper()
 
@@ -63,7 +68,7 @@ final class DataStoreManager<EntityType: NSManagedObject, ModelType>: DataStoreM
         }
     }
 
-    func load(identifier: String?) async throws -> Model? {
+    func load(identifier: String?, identifierType: IdentifierType = .id) async throws -> Model? {
         guard PersistentContainerWrapper.shared.initializationError == nil else {
             throw DataStoreErrors.persistentContainerError
         }
@@ -71,7 +76,8 @@ final class DataStoreManager<EntityType: NSManagedObject, ModelType>: DataStoreM
         return try await viewContext.perform {
             let fetchRequest: NSFetchRequest<Entity> = Entity.fetchRequest() as? NSFetchRequest<Entity> ?? NSFetchRequest<Entity>()
             if let id = identifier {
-                fetchRequest.predicate = NSPredicate(format: "id == %@", id)
+                let keyPath = (identifierType == .id) ? "id" : "url"
+                fetchRequest.predicate = NSPredicate(format: "\(keyPath) == %@", id)
             }
             let entity = try self.viewContext.fetch(fetchRequest).first
             return entity?.toModel()
